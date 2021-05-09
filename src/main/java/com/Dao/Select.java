@@ -38,6 +38,10 @@ public class Select {
         System.out.print("getGroup");
         return student.getName() +" is in group 1";
     }
+    public int getGroupNumber(Course course,String groupName){
+        System.out.print("统计小组人数");
+        return 0;
+    }
 
     public Teacher[] findMaterials(String status){
         System.out.print("findMaterials");
