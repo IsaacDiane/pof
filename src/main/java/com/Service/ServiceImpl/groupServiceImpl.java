@@ -51,4 +51,8 @@ public class groupServiceImpl implements groupService{
             }
         }
     }
+
+    public static void main(String args[]){
+
+    }
 }

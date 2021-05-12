@@ -3,6 +3,7 @@ package com.Dao;
 import com.Model.Course;
 import com.Model.Student;
 import com.Model.Teacher;
+import com.alibaba.fastjson.JSONObject;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -53,6 +54,24 @@ public class Select {
 
         }
         return student;
+    }
+
+    public Course SelectCourse(int id){
+        Course course=new Course();
+        String sql="SELECT * FROM COURSE WHERE id='"+id+"';";
+        try {
+            ps=connection.prepareStatement(sql);
+            rs=ps.executeQuery();
+            while(rs.next()){
+                int cid=rs.getInt("id");
+                String cname=rs.getString("name");
+                course.setId(cid);
+                course.setName(cname);
+            }
+        } catch (SQLException throwables) {
+
+        }
+        return course;
     }
     public Student[] SelectStudent(Course course){
         int cid=course.getId();
@@ -115,12 +134,59 @@ public class Select {
         return finalScore;
     }
     public String getGroup(Student student,Course course){
-        System.out.print("getGroup");
-        return student.getName() +" is in group 1";
+        int cid= course.getId();
+        int sid=student.getId();
+        String groupNo="";
+        String sql = "SELECT GROUPNO FROM CHOOSE WHERE SID="+sid+" AND CID="+cid+";";
+        try{
+            ps=connection.prepareStatement(sql);
+            rs=ps.executeQuery();
+            while(rs.next()){
+                groupNo=rs.getString("groupNo");
+            }
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        return groupNo;
+    }
+
+    public String[] getGroup(Course course){
+        int cid=course.getId();
+        String sql= "SELECT student.name,groupNo FROM student , choose WHERE cid="+cid+" AND sid=id ORDER BY groupNo";
+        List<String> result=new ArrayList<>();
+        try {
+            ps=connection.prepareStatement(sql);
+            rs=ps.executeQuery();
+
+            while(rs.next()){
+                JSONObject jobj=new JSONObject();
+                String sname=rs.getString("student.name");
+                String groupNo=rs.getString("groupNo");
+                jobj.put("name",sname);
+                jobj.put("groupNo",groupNo);
+                result.add(jobj.toJSONString());
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        String[] fin=new String[result.size()];
+        result.toArray(fin);
+        return fin;
     }
     public int getGroupNumber(Course course,String groupName){
-        System.out.print("统计小组人数");
-        return 0;
+        int memberNo=0;
+        int cid=course.getId();
+        String sql= "SELECT COUNT(1) AS memberNo FROM CHOOSE WHERE CID="+cid+" AND GROUPNO="+groupName+";";
+        try {
+            ps=connection.prepareStatement(sql);
+            rs=ps.executeQuery();
+            while(rs.next()){
+                memberNo=rs.getInt("memberNo");
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return memberNo;
     }
 
     public Teacher[] findMaterials(String status){
@@ -152,6 +218,12 @@ public class Select {
         }
         System.out.println(select.getNormalScore(student,course));
         System.out.println(select.getFinalScore(student,course));
+        System.out.println(select.getGroup(student,course));
+        System.out.println(select.getGroupNumber(course,"5"));
+        String[] group=select.getGroup(course);
+        for(int i=0;i<group.length;i++){
+            System.out.println(group[i]);
+        }
     }
 
 }
