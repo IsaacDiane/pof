@@ -4,6 +4,7 @@ public class Materials {
     private int id;
     private String name;
 
+
     public int getId() {
         return id;
     }
@@ -15,6 +16,4 @@ public class Materials {
     public String getName() {
         return name;
     }
-
-
 }
