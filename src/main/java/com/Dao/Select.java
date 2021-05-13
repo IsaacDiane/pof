@@ -152,7 +152,7 @@ public class Select {
 
     public String[] getGroup(Course course){
         int cid=course.getId();
-        String sql= "SELECT student.name,groupNo FROM student , choose WHERE cid="+cid+" AND sid=id ORDER BY groupNo";
+        String sql= "SELECT student.id , student.name,groupNo FROM student , choose WHERE cid="+cid+" AND sid=id ORDER BY groupNo";
         List<String> result=new ArrayList<>();
         try {
             ps=connection.prepareStatement(sql);
@@ -162,6 +162,8 @@ public class Select {
                 JSONObject jobj=new JSONObject();
                 String sname=rs.getString("student.name");
                 String groupNo=rs.getString("groupNo");
+                int sid= rs.getInt("student.id");
+                jobj.put("sid ", sid);
                 jobj.put("name",sname);
                 jobj.put("groupNo",groupNo);
                 result.add(jobj.toJSONString());
